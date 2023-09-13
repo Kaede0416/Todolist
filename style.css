@@ -13,6 +13,10 @@ h1 {
     align-items: center;
     padding-bottom: 8px;
 }
+h2:before {
+    content: url("https://hiyokoyarou.com/wp-content/uploads/2023/07/shiroi-inu.png");  
+    margin-right:20px; 
+}
 
 li {
     display: flex;
