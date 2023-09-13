@@ -1,13 +1,17 @@
 'use strict';
 
 {
-    const todos = [
-        { title: 'aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa ', isCompleted: false },
-        { title: 'bbb', isCompleted: true },
-        { title: 'ccc', isCompleted: false },
-        { title: 'ddd', isCompleted: false },
+    let todos;
 
-    ];
+    if (localStorage.getItem('todos') === null) {
+        todos = [];
+    } else {
+        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+
+    const saveTodos = () => {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
     const renderTodo = (todo) => {
         /* 
         - li
@@ -21,6 +25,14 @@
         const input = document.createElement('input');
         input.type = 'checkbox';
         input.checked = todo.isCompleted;
+        input.addEventListener('change', () => {
+            todos.forEach((item) => {
+                if (item.id === todo.id) {
+                    item.isCompleted = !item.isCompleted;
+                    saveTodos();
+                }
+            });
+        });
 
         const span = document.createElement('span');
         span.textContent = todo.title;
@@ -32,9 +44,14 @@
         button.textContent = 'x';
         button.addEventListener('click', () => {
             if (confirm('Sure?') === false) {
-                return
+                return;
             }
             li.remove();
+            todos = todos.filter((item) => {
+                return item.id !== todo.id;
+            });
+            saveTodos();
+
         });
 
 
@@ -57,11 +74,30 @@
         e.preventDefault();
         const input = document.querySelector('#add-form input');
         const todo = {
+            id: Date.now(),
             title: input.value, isCompleted: false,
         };
         renderTodo(todo);
+        todos.push(todo);
+        console.table(todos);
+        saveTodos();
         input.value = '';
         input.focus();
+
+    });
+
+    document.querySelector('#purge').addEventListener('click', () => {
+        if (confirm('Sure?') === false) {
+            return;
+        }
+        todos = todos.filter((todo) => {
+            return todo.isCompleted === false;
+        });
+        saveTodos();
+        document.querySelectorAll('#todos li').forEach((li) => {
+            li.remove();
+        });
+        renderTodos();
 
     });
     renderTodos();
